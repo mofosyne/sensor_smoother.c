@@ -3,6 +3,7 @@
 
 float sensor_smoother_array_buffered_simple_average(sensor_smoother_array_buffered_simple_average_t *state, float input_value)
 {
+    // Ref: https://en.wikipedia.org/wiki/Moving_average
     // If this is the first time we're calculating the average, initialize the buffer
     if (!state->init)
     {
@@ -16,7 +17,7 @@ float sensor_smoother_array_buffered_simple_average(sensor_smoother_array_buffer
         state->init = true;
     }
 
-    // Add the new value to the end of the buffer
+    // Add the new value to buffer
     state->buffer[state->write_index] = input_value;
 
     // Move to the next position in the buffer, wrapping around if necessary
@@ -28,13 +29,15 @@ float sensor_smoother_array_buffered_simple_average(sensor_smoother_array_buffer
     {
         avg += state->buffer[i];
     }
+    avg = avg / SENSOR_SMOOTHER_SIMPLE_AVERAGE_BUFFER_COUNT;
 
     // Return the calculated simple average value
-    return avg / SENSOR_SMOOTHER_SIMPLE_AVERAGE_BUFFER_COUNT;
+    return avg;
 }
 
 float sensor_smoother_exponential_moving_average(sensor_smoother_exponential_moving_average_t *state, float input_value)
 {
+    // Ref: https://en.wikipedia.org/wiki/Exponential_smoothing
     // If this is the first time we're calculating the average, initialize the last output value
     if (!state->init)
     {
