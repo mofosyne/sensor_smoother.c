@@ -6,7 +6,7 @@
 int main()
 {
     // Create instances of the state structures for simple average and exponential moving average calculations
-    sensor_smoother_array_buffered_simple_average_t simple_state = {0};
+    sensor_smoother_simple_moving_average_t simple_state = {0};
     sensor_smoother_exponential_moving_average_t exponential_state = {0};
 
     exponential_state.alpha = 0.1;
@@ -15,7 +15,7 @@ int main()
     for (int i = 0; i < 10; i++)
     {
         float input_value = i * 2.0f; // Input value to add to the buffer
-        printf("Simple Average: %f\n", sensor_smoother_array_buffered_simple_average(&simple_state, input_value));
+        printf("Simple Average: %f\n", sensor_smoother_simple_moving_average(&simple_state, input_value));
     }
 
     // Calculate the exponential moving average of a set of values

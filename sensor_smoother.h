@@ -1,15 +1,15 @@
 #ifndef SENSOR_SMOOTHER_H
 #define SENSOR_SMOOTHER_H
 
-#define SENSOR_SMOOTHER_SIMPLE_AVERAGE_BUFFER_COUNT 10
+#define SENSOR_SMOOTHER_SIMPLE_MOVING_AVERAGE_BUFFER_COUNT 10
 
 // Structure to hold the buffer for simple average calculation
 typedef struct
 {
     bool init; // Flag to indicate if the buffer has been initialized
     unsigned int write_index; // Index of the next position in the buffer to write to
-    float buffer[SENSOR_SMOOTHER_SIMPLE_AVERAGE_BUFFER_COUNT]; // Buffer to store values for simple average calculation
-} sensor_smoother_array_buffered_simple_average_t;
+    float buffer[SENSOR_SMOOTHER_SIMPLE_MOVING_AVERAGE_BUFFER_COUNT]; // Buffer to store values for simple average calculation
+} sensor_smoother_simple_moving_average_t;
 
 // Structure to hold the state for exponential moving average calculation
 typedef struct
@@ -29,7 +29,7 @@ typedef struct
  *
  * @return The calculated simple average value.
  */
-float sensor_smoother_array_buffered_simple_average(sensor_smoother_array_buffered_simple_average_t *state, float input_value);
+float sensor_smoother_simple_moving_average(sensor_smoother_simple_moving_average_t *state, float input_value);
 
 /**
  * Calculate the exponential moving average of a set of values.
