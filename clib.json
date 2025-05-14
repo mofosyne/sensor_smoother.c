@@ -4,5 +4,5 @@
   "repo": "mofosyne/sensor_smoother.c",
   "description": "Smoothing filter intended for sensors in embedded applications",
   "license": "MIT",
-  "src": ["sensor_smoother.h"]
+  "src": ["sensor_smoother.c", "sensor_smoother.h"]
 }
