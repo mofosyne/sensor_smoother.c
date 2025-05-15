@@ -10,7 +10,7 @@ PREFIX  ?= /usr/local
 CFLAGS += -Wall -std=c11 -pedantic
 
 .PHONY:
-all: test
+all: test test.png
 
 .PHONY: readme_update
 readme_update:
@@ -26,12 +26,15 @@ format:
 
 .PHONY:
 test: test.c sensor_smoother.c sensor_smoother.h
-	$(CC) $(CFLAGS) $(LDFLAGS) -o test test.c sensor_smoother.c
+	$(CC) $(CFLAGS) $(LDFLAGS) -o test test.c sensor_smoother.c -lm
 	./test
 
-.PHONY:
-%.o: %.c
-	$(CC) $(DEP_FLAG) $(CFLAGS) $(LDFLAGS) -o $@ -c $<
+test.png: test.gnuplot test.csv
+	gnuplot test.gnuplot
+
+#.PHONY:
+#%.o: %.c
+#	$(CC) $(DEP_FLAG) $(CFLAGS) $(LDFLAGS) -o $@ -c $<
 
 .PHONY:
 clean:
