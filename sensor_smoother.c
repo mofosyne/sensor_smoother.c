@@ -31,32 +31,26 @@
 float sensor_smoother_simple_moving_average(sensor_smoother_simple_moving_average_t *state, float input_value)
 {
     // Ref: https://en.wikipedia.org/wiki/Moving_average
-    // If this is the first time we're calculating the average, initialize the buffer
-    if (!state->init)
-    {
-        // Initialize all values in the buffer to the input value
-        for (int i = 0; i < SENSOR_SMOOTHER_SIMPLE_MOVING_AVERAGE_BUFFER_COUNT; i++)
-        {
-            state->buffer[i] = input_value;
-        }
-
-        // Mark that the buffer has been initialized
-        state->init = true;
-    }
 
     // Add the new value to buffer
     state->buffer[state->write_index] = input_value;
 
     // Move to the next position in the buffer, wrapping around if necessary
-    state->write_index = (state->write_index + 1) % SENSOR_SMOOTHER_SIMPLE_MOVING_AVERAGE_BUFFER_COUNT;
+    state->write_index = (state->write_index + 1) % state->buffer_size;
+
+    // Check if buffer is not full and increment if so
+    if (state->buffer_count < state->buffer_size)
+    {
+        state->buffer_count = state->buffer_count + 1;
+    }
 
     // Calculate the average of all values in the buffer
     float avg = 0.0f;
-    for (int i = 0; i < SENSOR_SMOOTHER_SIMPLE_MOVING_AVERAGE_BUFFER_COUNT; i++)
+    for (int i = 0; i < state->buffer_count; i++)
     {
         avg += state->buffer[i];
     }
-    avg = avg / SENSOR_SMOOTHER_SIMPLE_MOVING_AVERAGE_BUFFER_COUNT;
+    avg = avg / state->buffer_count;
 
     // Return the calculated simple average value
     return avg;

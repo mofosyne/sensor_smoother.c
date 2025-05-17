@@ -31,16 +31,16 @@
 #include <stdlib.h>
 #include "sensor_smoother.h"
 
-#define NUM_STEPS 1000
+#define NUM_STEPS 200
 
 int main() {
-    sensor_smoother_simple_moving_average_t simple_state;
-    sensor_smoother_exponential_moving_average_t exponential_state;
+    sensor_smoother_simple_moving_average_t simple_state = {0};
+    float buffer[SENSOR_SMOOTHER_SIMPLE_MOVING_AVERAGE_BUFFER_COUNT] = {0};
+    simple_state.buffer = buffer;
+    simple_state.buffer_size = SENSOR_SMOOTHER_SIMPLE_MOVING_AVERAGE_BUFFER_COUNT;
 
-    // Set alpha value for exponential moving average (smoothing factor)
+    sensor_smoother_exponential_moving_average_t exponential_state = {0};
     exponential_state.alpha = 0.1;
-
-    double input_values[NUM_STEPS] = {0};
 
     FILE *file_csv = fopen("test.csv", "w+");
 
@@ -52,8 +52,9 @@ int main() {
     // Write header row to CSV file
     fprintf(file_csv, "Time (ms),Input,SMA,EMA\n");
 
+    double input_values[NUM_STEPS] = {0};
     for (int i = 0; i < NUM_STEPS; i++) {
-        double sine_value = sin((double)i / 20.0 / 3.14);
+        double sine_value = sin((double)(i / 8.0) / 3.14);
         double noise = ((double)rand() / RAND_MAX * 0.2) - 0.1;
         input_values[i] = sine_value + noise;
 

@@ -33,9 +33,10 @@
 // Structure to hold the buffer for simple average calculation
 typedef struct
 {
-    bool init; // Flag to indicate if the buffer has been initialized
     unsigned int write_index; // Index of the next position in the buffer to write to
-    float buffer[SENSOR_SMOOTHER_SIMPLE_MOVING_AVERAGE_BUFFER_COUNT]; // Buffer to store values for simple average calculation
+    unsigned int buffer_count; // Number of values stored in the buffer
+    unsigned int buffer_size; // Max number of values stored in the buffer
+    float *buffer; // Buffer to store values for simple average calculation
 } sensor_smoother_simple_moving_average_t;
 
 // Structure to hold the state for exponential moving average calculation
