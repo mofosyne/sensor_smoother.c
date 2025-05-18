@@ -70,10 +70,5 @@ You can install this library using [clib](https://github.com/clibs/clib):
 clib install mofosyne/sensor_smoother.c
 ```
 
-This will download `sensor_smoother.c` and `sensor_smoother.h` into your project’s `deps/` directory. You can then include the header in your source files:
+This will download `sensor_smoother.c` and `sensor_smoother.h` into your project’s `deps/` directory that you can then include into your codebase.
 
-```c
-#include "sensor_smoother.h"
-```
-
-Make sure to compile the `.c` file with your project and include the `deps/` path if needed.
