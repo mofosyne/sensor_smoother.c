@@ -18,6 +18,8 @@ Pull requests and contributions are welcome!
 * The simple moving average requires the user to supply and manage the buffer, giving flexibility in buffer sizing and memory management.
 * The exponential moving average maintains internal state and requires setting a smoothing factor alpha between 0 and 1 (exclusive).
 * No dynamic memory allocation is performed inside the functions — all memory management is left to the user, ideal for embedded environments.
+* The library uses `float` (single precision) as it is the most common size for sensor data in embedded platforms.
+    - Users needing `double` precision can modify the source code accordingly, and contributions to support this are welcome.
 
 ## Usage
 
