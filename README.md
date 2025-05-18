@@ -1,45 +1,57 @@
 # sensor_smoother.c
 
-<versionBadge>![Version 0.2.0](https://img.shields.io/badge/version-0.2.0-blue.svg)</versionBadge>
+<versionBadge>![Version 0.2.1](https://img.shields.io/badge/version-0.2.1-blue.svg)</versionBadge>
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![C](https://img.shields.io/badge/Language-C-blue.svg)](https://en.wikipedia.org/wiki/C_(programming_language))
 [![CI/CD Status Badge](https://github.com/mofosyne/sensor_smoother.c/actions/workflows/ci.yml/badge.svg)](https://github.com/mofosyne/sensor_smoother.c/actions)
 
 ![](test.png)
 
-This is a small collection of sensor smoothing functions that may be
-useful for embedded devices etc...
+A small collection of sensor smoothing functions designed for embedded devices and other resource-constrained environments.
 
-Pull Requests and Other Contributions Are Welcomed
+Pull requests and contributions are welcome!
 
 ## Design Considerations
 
-* No checks for settings via initialiser or parameter checks
-    - Keeps compexity lower
-* Simple moving average requires users to supply their own buffer. 
-    - This allows for custom sizes between multiple different sensors.
+* Minimal runtime checks are enabled by default to catch common misconfigurations (e.g., null buffers or invalid alpha). This balances safety and performance, especially important in embedded systems.
+* Runtime checks can be disabled via compile-time flags to eliminate overhead when inputs are guaranteed valid.
+* The simple moving average requires the user to supply and manage the buffer, giving flexibility in buffer sizing and memory management.
+* The exponential moving average maintains internal state and requires setting a smoothing factor alpha between 0 and 1 (exclusive).
+* No dynamic memory allocation is performed inside the functions — all memory management is left to the user, ideal for embedded environments.
 
 ## Usage
 
-Below are some examples code for simple moving average and exponential
-moving average smoothers:
+### Simple Moving Average
+
+The simple moving average function maintains a circular buffer of recent input values and returns their average. The user must allocate and manage this buffer.
 
 ```c
 sensor_smoother_simple_moving_average_t sma_state = {0};
-sma_state.buffer = buffer;
+sma_state.buffer = buffer; // pre-allocated float array
 sma_state.buffer_size = sizeof(buffer) / sizeof(buffer[0]);
-float sma = sensor_smoother_simple_moving_average(&sma_state, input);
+
+float smoothed_value = sensor_smoother_simple_moving_average(&sma_state, input);
 ```
 
-The exponential moving average function below on the other hand requires
-that you set an alpha smoothing factor that is between 0.0 to 1.0 for
-how responsive the output is to the input values. Set alpha nearer to
-zero for slower response while setting alpha to 1.0 will get exactly
-the input value. You will want to pick a value inbetween but closer to
-zero to smooth the input signal out.
+The function performs runtime validation by default:
+* Returns the input value unchanged if the buffer is null or buffer size is zero.
+
+### Exponential Moving Average
+
+The exponential moving average uses a smoothing factor `alpha` between 0 (exclusive) and 1 (exclusive) to weight new input values. Smaller alpha values smooth more aggressively.
 
 ```c
 sensor_smoother_exponential_moving_average_t ema_state = {0};
-ema_state.alpha = 0.1; ///<  Smoothing factor (0 <= alpha < 1)
-float ema = sensor_smoother_exponential_moving_average(&ema_state, input);
+ema_state.alpha = 0.1f;  // Smoothing factor: 0 < alpha < 1
+
+float smoothed_value = sensor_smoother_exponential_moving_average(&ema_state, input);
 ```
+
+The function performs runtime validation by default:
+* Returns the input value unchanged if alpha is not strictly between 0 and 1.
+
+### Compile-time Flags
+
+These macros can be defined to disable internal parameter validation, reducing runtime overhead:
+* `DISABLE_SENSOR_SMOOTHER_SIMPLE_MOVING_AVERAGE_CHECKS`: Disable null buffer and zero-size checks in the simple moving average function.
+* `DISABLE_SENSOR_SMOOTHER_EXPONENTIAL_MOVING_AVERAGE_CHECKS`: Disable alpha range checks in the exponential moving average function.

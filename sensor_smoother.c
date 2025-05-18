@@ -25,12 +25,20 @@
     SOFTWARE.
 
  */
-#include <stdbool.h>
+#include <stddef.h>
 #include "sensor_smoother.h"
 
 float sensor_smoother_simple_moving_average(sensor_smoother_simple_moving_average_t *state, float input_value)
 {
     // Ref: https://en.wikipedia.org/wiki/Moving_average
+
+#ifndef DISABLE_SENSOR_SMOOTHER_SIMPLE_MOVING_AVERAGE_CHECKS
+    if ((state->buffer == NULL) || (state->buffer_size == 0))
+    {
+        // Missing Buffer
+        return input_value;
+    }
+#endif
 
     // Add the new value to buffer
     state->buffer[state->write_index] = input_value;
@@ -59,11 +67,19 @@ float sensor_smoother_simple_moving_average(sensor_smoother_simple_moving_averag
 float sensor_smoother_exponential_moving_average(sensor_smoother_exponential_moving_average_t *state, float input_value)
 {
     // Ref: https://en.wikipedia.org/wiki/Exponential_smoothing
+
+#ifndef DISABLE_SENSOR_SMOOTHER_EXPONENTIAL_MOVING_AVERAGE_CHECKS
+    if ((state->alpha <= 0.0) || (1.0 <= state->alpha))
+    {
+        return input_value;
+    }
+#endif
+
     // If this is the first time we're calculating the average, initialize the last output value
     if (!state->init)
     {
         state->lastOutput = input_value;
-        state->init = true;
+        state->init = 1;
     }
 
     // Update the last output value using the exponential moving average formula

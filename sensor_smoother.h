@@ -27,48 +27,52 @@
  */
 #ifndef SENSOR_SMOOTHER_H
 #define SENSOR_SMOOTHER_H
+#include <stddef.h>
 
-#define SENSOR_SMOOTHER_SIMPLE_MOVING_AVERAGE_BUFFER_COUNT 10
-
-// Structure to hold the buffer for simple average calculation
+// Structure to hold the buffer for simple moving average calculation
 typedef struct
 {
-    unsigned int write_index; // Index of the next position in the buffer to write to
-    unsigned int buffer_count; // Number of values stored in the buffer
-    unsigned int buffer_size; // Max number of values stored in the buffer
-    float *buffer; // Buffer to store values for simple average calculation
+    size_t write_index;  // Index of the next position in the buffer to write to
+    size_t buffer_count; // Number of values currently in the buffer
+    size_t buffer_size;  // Max number of values the buffer can hold
+    float *buffer;       // Pointer to the buffer holding float values
 } sensor_smoother_simple_moving_average_t;
 
 // Structure to hold the state for exponential moving average calculation
 typedef struct
 {
-    bool init; // Flag to indicate if the first value has been added
-    float lastOutput; // The latest calculated output value
-    float alpha; // Smoothing factor (0 <= alpha < 1) used in exponential moving average formula
+    int init;         // Flag: 0 = not initialized, 1 = initialized
+    float alpha;      // Smoothing factor (0 < alpha < 1)
+    float lastOutput; // Most recent output value
 } sensor_smoother_exponential_moving_average_t;
 
 /**
- * Calculate the simple average of a set of values over a window.
+ * Calculate the simple moving average (SMA) of a sequence of values.
  *
- * This function uses a buffer to store the most recent values and calculates the average of these values.
+ * This function maintains a circular buffer of recent values and returns their average.
+ * If the buffer is uninitialized or its size is 0, the input value is returned unchanged.
  *
- * @param state  Pointer to the state structure holding the current values and index.
- * @param input_value  The new value to add to the buffer.
+ * @param state        Pointer to the simple moving average state structure.
+ *                     Must be pre-initialized with buffer and size.
+ * @param input_value  New sensor/sample value to add.
  *
- * @return The calculated simple average value.
+ * @return The current simple moving average value.
  */
 float sensor_smoother_simple_moving_average(sensor_smoother_simple_moving_average_t *state, float input_value);
 
 /**
- * Calculate the exponential moving average of a set of values.
+ * Calculate the exponential moving average (EMA) of a sequence of values.
  *
- * This function uses the exponential moving average formula to calculate the latest output value based on the most recent input value and previous output values.
+ * This function applies exponential smoothing using a user-provided alpha.
+ * On first call (init == 0), it sets the initial output to the input value.
+ * If alpha is invalid (<= 0 or >= 1), the input value is returned unchanged.
  *
- * @param state  Pointer to the state structure holding the current values and index.
- * @param input_value  The new value to add to the buffer.
+ * @param state        Pointer to the exponential moving average state structure.
+ *                     Must be pre-initialized with a valid alpha.
+ * @param input_value  New sensor/sample value to include.
  *
- * @return The calculated exponential moving average value.
+ * @return The current exponential moving average value.
  */
 float sensor_smoother_exponential_moving_average(sensor_smoother_exponential_moving_average_t *state, float input_value);
 
-#endif  // SENSOR_SMOOTHER_H
+#endif // SENSOR_SMOOTHER_H

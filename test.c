@@ -35,9 +35,9 @@
 
 int main() {
     sensor_smoother_simple_moving_average_t simple_state = {0};
-    float buffer[SENSOR_SMOOTHER_SIMPLE_MOVING_AVERAGE_BUFFER_COUNT] = {0};
+    float buffer[10] = {0};
     simple_state.buffer = buffer;
-    simple_state.buffer_size = SENSOR_SMOOTHER_SIMPLE_MOVING_AVERAGE_BUFFER_COUNT;
+    simple_state.buffer_size = sizeof(buffer) / sizeof(buffer[0]);
 
     sensor_smoother_exponential_moving_average_t exponential_state = {0};
     exponential_state.alpha = 0.1;
