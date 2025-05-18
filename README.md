@@ -13,11 +13,11 @@ Pull requests and contributions are welcome!
 
 ## Design Considerations
 
-* Minimal runtime checks are enabled by default to catch common misconfigurations (e.g., null buffers or invalid alpha). This balances safety and performance, especially important in embedded systems.
+* Minimal runtime checks are enabled by default to catch common misconfigurations (e.g., null buffers or invalid alpha).
 * Runtime checks can be disabled via compile-time flags to eliminate overhead when inputs are guaranteed valid.
 * The simple moving average requires the user to supply and manage the buffer, giving flexibility in buffer sizing and memory management.
 * The exponential moving average maintains internal state and requires setting a smoothing factor alpha between 0 and 1 (exclusive).
-* No dynamic memory allocation is performed inside the functions — all memory management is left to the user, ideal for embedded environments.
+* No dynamic memory allocation used.
 * The library uses `float` (single precision) as it is the most common size for sensor data in embedded platforms.
     - Users needing `double` precision can modify the source code accordingly, and contributions to support this are welcome.
 
@@ -37,6 +37,7 @@ float smoothed_value = sensor_smoother_simple_moving_average(&sma_state, input);
 
 The function performs runtime validation by default:
 * Returns the input value unchanged if the buffer is null or buffer size is zero.
+    * Use this flag `DISABLE_SENSOR_SMOOTHER_SIMPLE_MOVING_AVERAGE_CHECKS` to disable null buffer and zero-size checks in the simple moving average function for performance reasons.
 
 ### Exponential Moving Average
 
@@ -51,16 +52,7 @@ float smoothed_value = sensor_smoother_exponential_moving_average(&ema_state, in
 
 The function performs runtime validation by default:
 * Returns the input value unchanged if alpha is not strictly between 0 and 1.
-
-### Compile-time Flags
-
-These macros can be defined to disable internal parameter validation, reducing runtime overhead:
-* `DISABLE_SENSOR_SMOOTHER_SIMPLE_MOVING_AVERAGE_CHECKS`: Disable null buffer and zero-size checks in the simple moving average function.
-* `DISABLE_SENSOR_SMOOTHER_EXPONENTIAL_MOVING_AVERAGE_CHECKS`: Disable alpha range checks in the exponential moving average function.
-
-Great — since you already have a `clib.json`, you can guide users to install your library using [`clib`](https://github.com/clibs/clib), the lightweight C package manager.
-
-Here’s a clean **"Installation"** section you can add to your README:
+    * Use this flag `DISABLE_SENSOR_SMOOTHER_EXPONENTIAL_MOVING_AVERAGE_CHECKS` to disable alpha range checks in the exponential moving average function for performance reasons.
 
 ## Installation Via Clib
 
