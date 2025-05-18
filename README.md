@@ -57,3 +57,23 @@ The function performs runtime validation by default:
 These macros can be defined to disable internal parameter validation, reducing runtime overhead:
 * `DISABLE_SENSOR_SMOOTHER_SIMPLE_MOVING_AVERAGE_CHECKS`: Disable null buffer and zero-size checks in the simple moving average function.
 * `DISABLE_SENSOR_SMOOTHER_EXPONENTIAL_MOVING_AVERAGE_CHECKS`: Disable alpha range checks in the exponential moving average function.
+
+Great — since you already have a `clib.json`, you can guide users to install your library using [`clib`](https://github.com/clibs/clib), the lightweight C package manager.
+
+Here’s a clean **"Installation"** section you can add to your README:
+
+## Installation Via Clib
+
+You can install this library using [clib](https://github.com/clibs/clib):
+
+```sh
+clib install mofosyne/sensor_smoother.c
+```
+
+This will download `sensor_smoother.c` and `sensor_smoother.h` into your project’s `deps/` directory. You can then include the header in your source files:
+
+```c
+#include "sensor_smoother.h"
+```
+
+Make sure to compile the `.c` file with your project and include the `deps/` path if needed.
