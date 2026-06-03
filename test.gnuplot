@@ -1,6 +1,6 @@
 set terminal png;
 set output "test.png";
-set title "Simple Moving Average vs Exponetial Moving Average";
+set title "Simple Moving Average vs Exponential Moving Average";
 set xlabel "Time";
 set ylabel "Value";
 

@@ -53,4 +53,5 @@ dkms.conf
 
 test
 test.csv
+test_stats.txt
 .vscode

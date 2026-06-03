@@ -49,12 +49,12 @@ float sensor_smoother_simple_moving_average(sensor_smoother_simple_moving_averag
     // Check if buffer is not full and increment if so
     if (state->buffer_count < state->buffer_size)
     {
-        state->buffer_count = state->buffer_count + 1;
+        state->buffer_count++;
     }
 
     // Calculate the average of all values in the buffer
     float avg = 0.0f;
-    for (int i = 0; i < state->buffer_count; i++)
+    for (size_t i = 0; i < state->buffer_count; i++)
     {
         avg += state->buffer[i];
     }
@@ -69,7 +69,7 @@ float sensor_smoother_exponential_moving_average(sensor_smoother_exponential_mov
     // Ref: https://en.wikipedia.org/wiki/Exponential_smoothing
 
 #ifndef DISABLE_SENSOR_SMOOTHER_EXPONENTIAL_MOVING_AVERAGE_CHECKS
-    if ((state->alpha <= 0.0) || (1.0 <= state->alpha))
+    if (!(state->alpha > 0.0f && state->alpha < 1.0f))
     {
         return input_value;
     }
@@ -78,12 +78,12 @@ float sensor_smoother_exponential_moving_average(sensor_smoother_exponential_mov
     // If this is the first time we're calculating the average, initialize the last output value
     if (!state->init)
     {
-        state->lastOutput = input_value;
+        state->last_output = input_value;
         state->init = 1;
     }
 
     // Update the last output value using the exponential moving average formula
-    state->lastOutput = input_value * state->alpha + state->lastOutput * (1.0 - state->alpha);
+    state->last_output = input_value * state->alpha + state->last_output * (1.0f - state->alpha);
 
-    return state->lastOutput;
+    return state->last_output;
 }
