@@ -79,7 +79,7 @@ float sensor_smoother_exponential_moving_average(sensor_smoother_exponential_mov
     if (!state->init)
     {
         state->last_output = input_value;
-        state->init        = 1;
+        state->init = 1;
     }
 
     // Update the last output value using the exponential moving average formula

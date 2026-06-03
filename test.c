@@ -42,7 +42,9 @@ static float total_variation(const float *data, int n)
 {
     float tv = 0.0f;
     for (int i = 1; i < n; i++)
+    {
         tv += fabsf(data[i] - data[i - 1]);
+    }
     return tv;
 }
 
@@ -77,7 +79,7 @@ int main(void)
     for (int i = 0; i < NUM_STEPS; i++)
     {
         clean_values[i] = (float)sin(i / 8.0 / M_PI);
-        double noise    = ((double)rand() / RAND_MAX * 0.2) - 0.1;
+        double noise = ((double)rand() / RAND_MAX * 0.2) - 0.1;
         input_values[i] = clean_values[i] + (float)noise;
     }
 
@@ -97,17 +99,19 @@ int main(void)
     }
     fprintf(file_csv, "Time (ms),Input,SMA,EMA\n");
     for (int i = 0; i < NUM_STEPS; i++)
+    {
         fprintf(file_csv, "%d,%f,%f,%f\n", i, input_values[i], sma_values[i], ema_values[i]);
+    }
     fclose(file_csv);
 
     // Compute statistics
     float tv_input = total_variation(input_values, NUM_STEPS);
-    float tv_sma   = total_variation(sma_values,   NUM_STEPS);
-    float tv_ema   = total_variation(ema_values,   NUM_STEPS);
+    float tv_sma = total_variation(sma_values, NUM_STEPS);
+    float tv_ema = total_variation(ema_values, NUM_STEPS);
 
     float mse_input = mean_squared_error(input_values, clean_values, NUM_STEPS);
-    float mse_sma   = mean_squared_error(sma_values,   clean_values, NUM_STEPS);
-    float mse_ema   = mean_squared_error(ema_values,   clean_values, NUM_STEPS);
+    float mse_sma = mean_squared_error(sma_values, clean_values, NUM_STEPS);
+    float mse_ema = mean_squared_error(ema_values, clean_values, NUM_STEPS);
 
     float sma_tv_reduction = (1.0f - tv_sma / tv_input) * 100.0f;
     float ema_tv_reduction = (1.0f - tv_ema / tv_input) * 100.0f;
