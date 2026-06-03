@@ -19,6 +19,7 @@ Pull requests and contributions are welcome!
 * The exponential moving average maintains internal state and requires setting a smoothing factor alpha between 0 and 1 (exclusive).
 * No dynamic memory allocation used.
 * All internal state is in user-managed structs; reset macros are provided to restart smoothing without reallocating.
+* Not thread-safe: each state struct must be used from a single thread or task. In RTOS environments, guard shared state with a mutex.
 * The library uses `float` (single precision) as it is the most common size for sensor data in embedded platforms.
     - Users needing `double` precision can modify the source code accordingly, and contributions to support this are welcome.
 * A version macro (`SENSOR_SMOOTHER_VERSION`) is available in the header for compile-time version checks.
