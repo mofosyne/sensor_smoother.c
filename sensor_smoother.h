@@ -29,6 +29,11 @@
 #define SENSOR_SMOOTHER_H
 #include <stddef.h>
 
+#define SENSOR_SMOOTHER_VERSION_MAJOR 0
+#define SENSOR_SMOOTHER_VERSION_MINOR 2
+#define SENSOR_SMOOTHER_VERSION_PATCH 1
+#define SENSOR_SMOOTHER_VERSION "0.2.1"
+
 // Structure to hold the buffer for simple moving average calculation
 typedef struct
 {
@@ -38,13 +43,21 @@ typedef struct
     float *buffer;       // Pointer to the buffer holding float values
 } sensor_smoother_simple_moving_average_t;
 
+// Resets SMA state without clearing the buffer allocation.
+#define SENSOR_SMOOTHER_SMA_RESET(state) \
+    do { (state)->write_index = 0; (state)->buffer_count = 0; } while (0)
+
 // Structure to hold the state for exponential moving average calculation
 typedef struct
 {
-    int init;         // Flag: 0 = not initialized, 1 = initialized
-    float alpha;      // EMA alpha, 0 < alpha < 1 (DSP convention: smaller = more smoothing, e.g. 0.1 heavy, 0.9 light)
-    float lastOutput; // Most recent output value
+    int   init;        // Flag: 0 = not initialized, 1 = initialized
+    float alpha;       // EMA alpha, 0 < alpha < 1 (DSP convention: smaller = more smoothing, e.g. 0.1 heavy, 0.9 light)
+    float last_output; // Most recent output value
 } sensor_smoother_exponential_moving_average_t;
+
+// Resets EMA state so the next input seeds the filter from scratch.
+#define SENSOR_SMOOTHER_EMA_RESET(state) \
+    do { (state)->init = 0; } while (0)
 
 // Helper: convert an intuitive smoothing level to the DSP alpha parameter.
 // smoothing=0.0 → no smoothing (alpha=1.0), smoothing=0.9 → heavy smoothing (alpha=0.1).
@@ -68,8 +81,8 @@ float sensor_smoother_simple_moving_average(sensor_smoother_simple_moving_averag
  * Calculate the exponential moving average (EMA) of a sequence of values.
  *
  * This function applies exponential smoothing using a user-provided alpha.
- * On first call (init == 0), it sets the initial output to the input value.
- * If alpha is invalid (<= 0 or >= 1), the input value is returned unchanged.
+ * On first call (init == 0), it seeds the filter with the input value.
+ * If alpha is not a finite value strictly between 0 and 1, the input value is returned unchanged.
  *
  * @param state        Pointer to the exponential moving average state structure.
  *                     Must be pre-initialized with a valid alpha.
