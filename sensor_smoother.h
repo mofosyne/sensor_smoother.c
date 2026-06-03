@@ -42,9 +42,13 @@ typedef struct
 typedef struct
 {
     int init;         // Flag: 0 = not initialized, 1 = initialized
-    float alpha;      // Smoothing factor (0 < alpha < 1)
+    float alpha;      // EMA alpha, 0 < alpha < 1 (DSP convention: smaller = more smoothing, e.g. 0.1 heavy, 0.9 light)
     float lastOutput; // Most recent output value
 } sensor_smoother_exponential_moving_average_t;
+
+// Helper: convert an intuitive smoothing level to the DSP alpha parameter.
+// smoothing=0.0 → no smoothing (alpha=1.0), smoothing=0.9 → heavy smoothing (alpha=0.1).
+#define SENSOR_SMOOTHER_EMA_ALPHA(smoothing) (1.0f - (smoothing))
 
 /**
  * Calculate the simple moving average (SMA) of a sequence of values.

@@ -69,7 +69,7 @@ float sensor_smoother_exponential_moving_average(sensor_smoother_exponential_mov
     // Ref: https://en.wikipedia.org/wiki/Exponential_smoothing
 
 #ifndef DISABLE_SENSOR_SMOOTHER_EXPONENTIAL_MOVING_AVERAGE_CHECKS
-    if ((state->alpha <= 0.0) || (1.0 <= state->alpha))
+    if (!(state->alpha > 0.0f && state->alpha < 1.0f))
     {
         return input_value;
     }

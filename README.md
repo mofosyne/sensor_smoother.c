@@ -41,17 +41,23 @@ The function performs runtime validation by default:
 
 ### Exponential Moving Average
 
-The exponential moving average uses a smoothing factor `alpha` between 0 (exclusive) and 1 (exclusive) to weight new input values. Smaller alpha values smooth more aggressively.
+The exponential moving average uses a smoothing factor `alpha` between 0 (exclusive) and 1 (exclusive) to weight new input values. This follows the standard DSP convention where **smaller alpha = more smoothing** (e.g. `0.1` is heavy smoothing, `0.9` is light).
 
 ```c
 sensor_smoother_exponential_moving_average_t ema_state = {0};
-ema_state.alpha = 0.1f;  // Smoothing factor: 0 < alpha < 1
+ema_state.alpha = 0.1f;  // heavy smoothing: 0 < alpha < 1 (DSP convention)
 
 float smoothed_value = sensor_smoother_exponential_moving_average(&ema_state, input);
 ```
 
+If you prefer to think in terms of a smoothing level (0 = none, 1 = maximum), use the provided helper macro:
+
+```c
+ema_state.alpha = SENSOR_SMOOTHER_EMA_ALPHA(0.9f);  // 0.9 smoothing level → alpha 0.1
+```
+
 The function performs runtime validation by default:
-* Returns the input value unchanged if alpha is not strictly between 0 and 1.
+* Returns the input value unchanged if alpha is not a finite value strictly between 0 and 1 (including NaN and infinity).
     * Use this flag `DISABLE_SENSOR_SMOOTHER_EXPONENTIAL_MOVING_AVERAGE_CHECKS` to disable alpha range checks in the exponential moving average function for performance reasons.
 
 ## Installation Via Clib
